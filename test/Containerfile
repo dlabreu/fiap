@@ -1,0 +1,18 @@
+# Usa uma imagem oficial Node.js como base
+FROM node:18-alpine
+
+# Define o diretório de trabalho no container
+WORKDIR /usr/src/app
+
+# Copia os arquivos de configuração do projeto
+COPY package*.json ./
+
+# Instala as dependências do projeto, incluindo 'node-fetch'
+RUN npm install
+
+# Copia o script do gerador de dados de teste
+COPY test_data_generator.js ./
+
+# O container está pronto para ser executado
+# Este container não roda um serviço, ele é projetado para
+# executar o script e sair.

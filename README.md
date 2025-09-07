@@ -1,85 +1,67 @@
-# Validador de Acesso com Análise de Risco
+Instruções para Docker e Podman do SDK Antifraude
+Este guia explica como construir e rodar os contêineres Docker ou Podman para o serviço de backend e o gerador de dados de teste.
 
-Este projeto é um exemplo de sistema de validação de requisições de login e checkout com base em dados comportamentais, localização, biometria e características do dispositivo. Ele utiliza Flask para fornecer uma API simples e uma interface web para testes.
+Estrutura do Projeto
+Certifique-se de que seus arquivos estejam organizados da seguinte forma:
 
-## Funcionalidades
+.
+├── backend/
+│   ├── Dockerfile
+│   ├── package.json
+│   └── fraud_sdk_backend.js
+│
+├── test/
+│   ├── Dockerfile
+│   ├── package.json
+│   └── test_data_generator.js
+│
+└── README.md
 
-- API para validar requisições de acesso.
-- Interface web para testar manualmente os dados.
-- Análise de risco com base em múltiplos critérios.
-- Container Podman para facilitar o deploy e testes.
+1. Configurando a Rede Compartilhada (Podman)
+Para que os contêineres possam se comunicar, eles devem estar na mesma rede. Crie uma nova rede do Podman.
 
----
+podman network create --ignore fraud-network
 
-## Requisitos
 
-- [Podman](https://podman.io) instalado no seu sistema.
-- Python 3 (se quiser rodar sem container).
 
----
+2. Rodando o Serviço de Backend
+O serviço de backend deve ser o primeiro a ser iniciado, pois o gerador de dados de teste precisa de um endpoint para enviar os dados.
 
-## Instalação do Podman no Windows
+Passo a Passo:
 
-1. Instale o [Windows Subsystem for Linux (WSL2)](https://learn.microsoft.com/pt-br/windows/wsl/install).
-2. Instale uma distribuição Linux (ex: Ubuntu) via Microsoft Store.
-3. Dentro da distribuição Linux, execute:
+Navegue até o diretório backend/ no seu terminal.
 
-```bash
-sudo apt update
-sudo apt install -y podman
-```
+Construa a imagem do contêiner.
 
-4. (Opcional) Configure Podman para rodar como rootless com:
+podman build -t fraud-sdk-backend .
 
-```bash
-podman info
-```
 
----
 
-## Como Rodar
+Execute o contêiner e conecte-o à rede fraud-network.
 
-### 1. Clonar ou extrair os arquivos
+podman run --name fraud-backend-service --network=fraud-network -d fraud-sdk-backend
 
-Extraia o conteúdo do `.zip` ou clone o repositório se estiver no GitHub.
 
-### 2. Build da imagem com Podman
 
-```bash
-podman build -t validador-acesso .
-```
+O servidor Express agora está rodando dentro do contêiner na rede fraud-network.
 
-### 3. Executar o container
+3. Gerando e Enviando Dados de Teste
+Agora você pode usar o contêiner do gerador de dados para enviar payloads para o backend que está rodando.
 
-```bash
-podman run --rm -p 8080:8080 validador-acesso
-```
+Passo a Passo:
 
-Acesse no navegador: [http://localhost:8080](http://localhost:8080)
+Navegue até o diretório test/ no seu terminal.
 
----
+Construa a imagem do contêiner.
 
-## Estrutura do Projeto
+podman build -t test-data-generator .
 
-- `app.py`: Servidor Flask que fornece a API e interface.
-- `logic.py`: Contém a lógica de validação de risco.
-- `templates/index.html`: Interface para testes manuais.
-- `Containerfile`: Receita do container para rodar tudo automaticamente.
 
----
 
-## Exemplo de Uso da API
+Execute o contêiner, passando o endereço IP do seu servidor de backend como uma variável de ambiente. Substitua <seu_ip_aqui> pelo IP ou nome de domínio real da máquina onde o contêiner de backend está rodando.
 
-```bash
-curl -X POST http://localhost:8080/api/validar \
-     -H "Content-Type: application/json" \
-     -d '{ "usuarioId": "usr-123", "dispositivo": { "trustScore": 50 }, "biometriaFacial": { "match": false }, "comportamento": { "inputRate": 0.2, "padraoMouse": "nenhum" } }'
-```
+podman run --rm -e BACKEND_HOST=<seu_ip_aqui> test-data-generator node test_data_generator.js
 
----
 
-## Licença
 
-Este projeto é apenas um protótipo para fins educacionais e de demonstração.
-
----
+Ao executar o comando, o contêiner de teste irá rodar o script, enviar um payload de alto risco para o seu serviço de backend e mostrar o resultado no terminal.

@@ -1,0 +1,9 @@
+{
+  "name": "test-data-generator",
+  "version": "1.0.0",
+  "description": "Gerador de payloads para testes do SDK de antifraude.",
+  "main": "test_data_generator.js",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}

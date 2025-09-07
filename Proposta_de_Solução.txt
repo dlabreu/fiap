@@ -1,0 +1,81 @@
+PROPOSTA DE SOLUÇÃO: SDK DE AVALIAÇÃO DE USO E COMPORTAMENTO DO USUÁRIO
+
+1 OBJETIVO DO PROJETO
+
+O objetivo principal é o desenvolvimento de um SDK de avaliação de uso e comportamento do usuário para antifraude. Esta solução visa auxiliar aplicações de e-commerce, como a NexShop, a validar a identidade de usuários em pontos críticos da jornada de compra, como login e checkout, com o mínimo de atrito possível.
+
+O SDK será capaz de:
+
+Coletar dados comportamentais e de ambiente do usuário.
+
+Analisar esses dados para avaliar o risco de fraude.
+
+Gerar um score de confiança ou uma classificação de risco.
+
+Fornecer uma resposta padronizada que permita ao sistema hospedeiro tomar uma decisão imediata.
+
+2 CARACTERÍSTICAS PRINCIPAIS
+
+O SDK será projetado com foco em flexibilidade, facilidade de uso e integração, atendendo às seguintes características:
+
+Modular e Reutilizável: Desenvolvido em módulos independentes, permitindo que cada componente seja utilizado conforme a necessidade da aplicação.
+
+Plugável: Possível de ser integrado de forma transparente tanto no frontend quanto no backend da aplicação.
+
+Documentação Simples: Acompanhado de uma documentação clara e concisa, com exemplos de código para facilitar a implementação.
+
+Fácil Instalação: O processo de instalação será simplificado ao máximo, utilizando gerenciadores de pacotes padrão da indústria.
+
+3 ESCOPO TÉCNICO DA SOLUÇÃO
+
+A solução será dividida em duas partes principais, que se comunicam para fornecer a avaliação completa de risco.
+
+3.1 MÓDULO DO LADO DO USUÁRIO (FRONT-END)
+
+Este módulo será a parte do SDK que roda no navegador do usuário. Ele será escrito de forma a ser desacoplado de qualquer framework (como React, Vue ou Angular), permitindo que seja consumido por qualquer aplicação web, incluindo a interface da NexShop em React.
+
+Funcionalidades:
+
+Coleta de Dados de Ambiente e Comportamento: Captura de forma segura e assíncrona as seguintes informações:
+
+Device Fingerprint: Dados do dispositivo e navegador, como tipo de navegador, sistema operacional, IP, fuso horário, resolução de tela, idioma, e outras características que, juntas, criam uma "impressão digital" do dispositivo.
+
+Comportamento do Usuário: Métricas como tempo de permanência na página, movimentos do mouse (padrões de movimentação), interações com elementos da página e estado de foco da aba.
+
+Metadados da Sessão: Informações contextuais sobre a sessão do usuário.
+
+Transmissão de Dados: Envio seguro de todos os dados coletados para o backend por meio de um endpoint HTTP.
+
+Módulo Opcional de Captura Facial: Um componente adicional que, com consentimento explícito do usuário, pode ser ativado para capturar imagens faciais para validação de identidade em cenários de alta sensibilidade.
+
+3.2 MÓDULO DE ANÁLISE DE RISCO (BACK-END)
+
+Este módulo será um serviço leve e desacoplado que pode ser consumido por qualquer aplicação backend, como o ambiente Node.js com ExpressJS da NexShop.
+
+Funcionalidades:
+
+Recepção de Dados: Recebe os dados de ambiente e comportamento do usuário enviados pelo módulo do frontend via um endpoint HTTP dedicado.
+
+Lógica de Análise de Risco: Processa os dados recebidos para determinar o nível de risco da transação ou ação. Esta lógica pode ser baseada em:
+
+Análise por Regras: Aplicação de regras predefinidas (ex: "login de um novo dispositivo + geolocalização suspeita" = "alto risco").
+
+Pontuação de Risco: Atribuição de uma pontuação numérica que reflete o nível de confiança ou a probabilidade de fraude.
+
+Resposta Padronizada: Retorna um objeto de resposta simples e padronizado para a aplicação cliente, com uma das seguintes classificações:
+
+allow: Indica que a ação pode prosseguir sem validação adicional.
+
+review: Sugere que a ação requer uma validação adicional, como MFA (autenticação de múltiplos fatores).
+
+deny: Recomenda que a ação seja bloqueada imediatamente por alto risco de fraude.
+
+4 CONTEXTO DE IMPLEMENTAÇÃO NA NEXSHOP
+
+A solução proposta se alinha perfeitamente com a arquitetura moderna da NexShop, que utiliza Node.js no backend e React no frontend.
+
+O módulo frontend será facilmente integrado ao aplicativo React da NexShop, sem depender de componentes específicos do framework.
+
+O módulo backend será implementado como um serviço ExpressJS, capaz de processar as solicitações do frontend de forma eficiente e escalável.
+
+Essa arquitetura garante que a solução seja leve, performática e capaz de se adaptar ao rápido crescimento da plataforma, enquanto mitiga proativamente as tentativas de fraude em etapas críticas da jornada de compra, como login e checkout, sem degradar a experiência do usuário.
